@@ -58,7 +58,7 @@ const Navbar = () => {
             Home
           </Link>
           <Link
-            to="/trending"
+            to="/"
             className="hover:text-blue-800 transition-colors"
             onClick={handleLinkClick}
           >
@@ -72,7 +72,7 @@ const Navbar = () => {
             Most Popular
           </Link>
           <Link
-            to="/about"
+            to="/"
             className="hover:text-blue-800 transition-colors"
             onClick={handleLinkClick}
           >
@@ -103,13 +103,13 @@ const Navbar = () => {
         <Link to="/" className="hover:text-blue-800 transition-colors">
           Home
         </Link>
-        <Link to="/trending" className="hover:text-blue-800 transition-colors">
+        <Link to="/" className="hover:text-blue-800 transition-colors">
           Trending
         </Link>
-        <Link to="/popular" className="hover:text-blue-800 transition-colors">
+        <Link to="/" className="hover:text-blue-800 transition-colors">
           Most Popular
         </Link>
-        <Link to="/about" className="hover:text-blue-800 transition-colors">
+        <Link to="/" className="hover:text-blue-800 transition-colors">
           About
         </Link>
         {currentUser ? (

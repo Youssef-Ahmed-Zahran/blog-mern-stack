@@ -69,9 +69,7 @@ const Login = () => {
         await login(response.data.token);
         toast.success("LoggedIn Success 😎");
         navigate("/");
-      } else {
-        setErrors(response.data.errors || "Login failed");
-      }
+      } 
     } catch (err) {
       toast.error(err);
       console.error("Login error:", err);
