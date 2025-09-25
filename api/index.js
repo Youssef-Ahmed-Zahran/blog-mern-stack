@@ -1,17 +1,15 @@
 const express = require("express");
+const app = express();
 const conectToDB = require("./config/db");
 const { notFound, errorHanlder } = require("./middlewares/errors");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-// Connection To Database
-conectToDB();
-
-// Init App
-const app = express();
-
-// Cors Policy
+// Express Usages
+app.use(cookieParser());
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: ["http://localhost:5173", "https://blog-reactjs-zeta.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -21,9 +19,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Apply Middlewares
-app.use(cookieParser());
-app.use(express.json());
+// Connection To Database
+conectToDB();
 
 // Routes
 app.use("/api/users", require("./routes/users"));
