@@ -13,7 +13,7 @@ const app = express();
 
 // Cors Policy
 const corsOptions = {
-  origin: ["http://localhost:5173", ""],
+  origin: ["http://localhost:5173", "https://blog-reactjs-zeta.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposedHeaders: ["Set-Cookie"],
