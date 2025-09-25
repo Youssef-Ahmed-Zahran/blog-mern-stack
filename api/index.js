@@ -12,24 +12,15 @@ conectToDB();
 const app = express();
 
 // Cors Policy
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true, // Allow credentials (cookies) to be sent
-  })
-);
+const corsOptions = {
+  origin: ["http://localhost:5173", ""],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["Set-Cookie"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
-// allow cross-origin requests
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
 // Apply Middlewares
 app.use(cookieParser());
 app.use(express.json());
