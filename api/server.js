@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const mongoose = require("mongoose");
+const { notFound, errorHanlder } = require("./middlewares/errors");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
@@ -13,6 +14,7 @@ const commentRoute = require("./routes/comments");
 
 // Express Usages
 dotenv.config();
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
@@ -22,6 +24,7 @@ const corsOptions = {
   exposedHeaders: ["Set-Cookie"],
   credentials: true,
 };
+
 app.use(cors(corsOptions));
 
 // Database Config
@@ -41,9 +44,8 @@ app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
 
-// Route Not-Found
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
+// Error Hander Middleware
+app.use(notFound);
+app.use(errorHanlder);
 
 app.listen(PORT, () => console.log(`Server Running on PORT ${PORT} 🥰`));

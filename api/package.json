@@ -1,15 +1,14 @@
 {
-  "name": "api",
+  "name": "apii",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon index.js"
-  },
-  "keywords": [],
-  "author": "",
+  "description": "build blog api",
   "license": "ISC",
+  "author": "Youssef Zharahn",
   "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
@@ -19,7 +18,7 @@
     "express-async-handler": "^1.2.0",
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.1",
+    "mongoose": "^8.18.2",
     "nodemon": "^3.1.10"
   }
 }
