@@ -32,15 +32,9 @@ const Comment = ({ comment, postId }) => {
     <div className="bg-slate-50 p-4 rounded-xl mb-8">
       {/* info */}
       <div className="flex items-center gap-4">
-        {comment.user?.img ? (
+        {comment.user?.img && (
           <Imagee
             src={comment.user?.img}
-            className="rounded-full object-cover w-10 h-10"
-            w="40"
-          />
-        ) : (
-          <Imagee
-            src="userImg.jpeg"
             className="rounded-full object-cover w-10 h-10"
             w="40"
           />
