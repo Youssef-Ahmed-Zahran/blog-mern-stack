@@ -1,17 +1,22 @@
 const express = require("express");
 const app = express();
-const conectToDB = require("./config/db");
-const { notFound, errorHanlder } = require("./middlewares/errors");
+const PORT = process.env.PORT || 8080;
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
-require("dotenv").config();
+
+// Routes
+const authRoute = require("./routes/auth");
+const userRoute = require("./routes/users");
+const postRoute = require("./routes/posts");
+const commentRoute = require("./routes/comments");
 
 // Express Usages
-app.use(cookieParser());
+dotenv.config();
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://blog-reactjs-zeta.vercel.app"],
+  origin: ["http://localhost:5173", "https://daily-tasks-react-one.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposedHeaders: ["Set-Cookie"],
@@ -19,23 +24,26 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Connection To Database
-conectToDB();
+// Database Config
+mongoose.set("strictQuery", true);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Database connected successfully! 🎉");
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error.message);
+  });
 
-// Routes
-app.use("/api/users", require("./routes/users"));
-app.use("/api/posts", require("./routes/posts"));
-app.use("/api/comments", require("./routes/comments"));
-app.use("/api/auth", require("./routes/auth"));
+// MiddleWares
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/posts", postRoute);
+app.use("/api/comments", commentRoute);
 
-// Error Handler Middleware
-app.use(notFound);
-app.use(errorHanlder);
+// Route Not-Found
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
 
-// Running the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () =>
-  console.log(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
-  )
-);
+app.listen(PORT, () => console.log(`Server Running on PORT ${PORT} 🥰`));

@@ -169,14 +169,24 @@ const deletePostById = asyncHandler(async (req, res) => {
   }
 });
 
-const imagekit = new ImageKit({
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-});
+// Initialize ImageKit lazily when needed
+let imagekit = null;
+
+const getImageKit = () => {
+  if (!imagekit) {
+    imagekit = new ImageKit({
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+      publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    });
+  }
+  return imagekit;
+};
 
 const uploadAuth = asyncHandler(async (req, res) => {
-  const { token, expire, signature } = imagekit.getAuthenticationParameters();
+  const imagekitInstance = getImageKit();
+  const { token, expire, signature } =
+    imagekitInstance.getAuthenticationParameters();
   res.send({
     token,
     expire,
