@@ -1,14 +1,16 @@
 import { IKContext, IKUpload } from "imagekitio-react";
 import { useRef } from "react";
 import toast from "react-hot-toast";
+import { makeRequest } from "../requestMethod";
 
 const authenticator = async () => {
   try {
     // Perform the request to the upload authentication endpoint.
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/posts/upload-auth`
+    const response = await makeRequest.get(
+      `posts/upload-auth`
     );
-    if (!response.ok) {
+
+    if (!response) {
       // If the server response is not successful, extract the error text for debugging.
       const errorText = await response.text();
       throw new Error(
