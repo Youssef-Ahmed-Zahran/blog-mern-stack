@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const makeRequest = axios.create({
-  baseURL: "https://blog-api-two-dun.vercel.app/api/",
+  baseURL: "https://blog-api-eight-brown.vercel.app/api/",
   withCredentials: true,
 });
 

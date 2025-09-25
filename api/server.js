@@ -18,7 +18,10 @@ dotenv.config();
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://daily-tasks-react-one.vercel.app"],
+  origin: [
+    "http://localhost:5173",
+    "https://blog-client-pearl-nine.vercel.app",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposedHeaders: ["Set-Cookie"],
