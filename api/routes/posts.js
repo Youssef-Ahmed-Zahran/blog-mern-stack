@@ -10,8 +10,8 @@ const {
   featurePost,
 } = require("../controllers/postController");
 const {
-  verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
+  verifyToken,
 } = require("../middlewares/verifyToken");
 const { increaseVisit } = require("../middlewares/increaseVisit");
 
@@ -23,8 +23,8 @@ router.get("/:slug", increaseVisit, getPostById);
 
 router
   .route("/:id")
-  .put(verifyTokenAndAuthorization, updatePostById)
-  .delete(verifyTokenAndAuthorization, deletePostById);
+  .put(verifyToken, updatePostById)
+  .delete(verifyToken, deletePostById);
 
 router.patch("/feature", verifyTokenAndAdmin, featurePost);
 
