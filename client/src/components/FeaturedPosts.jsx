@@ -45,15 +45,15 @@ const FeaturedPosts = () => {
         {/* details */}
         <div className="flex items-center gap-4">
           <h1 className="font-semibold lg:text-lg">01.</h1>
-          <div className="text-xs">
-            <Link
-              className="text-blue-800 lg:text-lg"
-              to={`/posts?cat=${posts[0].category}`}
-            >
-              {posts[0].category}
-            </Link>
-            <span className="text-gray-500">{format(posts[0].createdAt)}</span>
-          </div>
+          <Link
+            className="text-blue-800 text-xs lg:text-lg"
+            to={`/posts?cat=${posts[0].category}`}
+          >
+            {posts[0].category}
+          </Link>
+          <span className="text-gray-500 text-xs">
+            {format(posts[0].createdAt)}
+          </span>
         </div>
         {/* title */}
         <Link
