@@ -2,11 +2,9 @@ import { useState, useContext, useEffect } from "react";
 import Imagee from "./Imagee";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import LoadingSpinner from "./LoadingSpinner"; // Import your LoadingSpinner
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { currentUser, logout } = useContext(AuthContext);
 
   // Prevent body scroll when mobile menu is open
@@ -27,24 +25,6 @@ const Navbar = () => {
   const handleLinkClick = () => {
     setOpen(false);
   };
-
-  // Handle logout with loading state
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-      await logout();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      setIsLoggingOut(false);
-      handleLinkClick(); // Close mobile menu if open
-    }
-  };
-
-  // Loading spinner overlay when logging out
-  if (isLoggingOut) {
-    return <LoadingSpinner fullScreen={true} text="Logging out..." size="lg" />;
-  }
 
   return (
     <div className="w-full h-16 md:h-20 flex justify-between items-center relative">
@@ -100,11 +80,13 @@ const Navbar = () => {
           </Link>
           {currentUser ? (
             <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="bg-blue-800 py-2 px-4 text-white rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                logout();
+                handleLinkClick();
+              }}
+              className="bg-blue-800 py-2 px-4 text-white rounded-full hover:bg-blue-900 transition-colors"
             >
-              {isLoggingOut ? "Logging out..." : "Logout"}
+              Logout
             </button>
           ) : (
             <Link to="/login" onClick={handleLinkClick}>
@@ -132,11 +114,10 @@ const Navbar = () => {
         </Link>
         {currentUser ? (
           <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="bg-blue-800 py-2 px-4 text-white rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => logout()}
+            className="bg-blue-800 py-2 px-4 text-white rounded-full hover:bg-blue-900 transition-colors"
           >
-            {isLoggingOut ? "Logging out..." : "Logout"}
+            Logout
           </button>
         ) : (
           <Link to="/login">
