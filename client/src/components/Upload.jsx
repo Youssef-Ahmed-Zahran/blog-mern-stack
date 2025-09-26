@@ -6,9 +6,7 @@ import { makeRequest } from "../requestMethod";
 const authenticator = async () => {
   try {
     // Perform the request to the upload authentication endpoint.
-    const response = await makeRequest.get(
-      `posts/upload-auth`
-    );
+    const response = await makeRequest.get(`/posts/upload-auth`);
 
     if (!response) {
       // If the server response is not successful, extract the error text for debugging.
