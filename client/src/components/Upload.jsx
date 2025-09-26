@@ -5,10 +5,14 @@ import { makeRequest } from "../requestMethod";
 
 const authenticator = async () => {
   try {
+    // Perform the request to the upload authentication endpoint.
     const response = await makeRequest.get(`/posts/upload-auth`);
+
     const { signature, expire, token, publicKey } = response.data;
+
     return { signature, expire, token, publicKey };
   } catch (error) {
+    // Log the original error for debugging before rethrowing a new error.
     console.error("Authentication error:", error);
     throw new Error("Authentication request failed");
   }
@@ -18,86 +22,37 @@ const Upload = ({ children, type, setData, setProgress }) => {
   const ref = useRef(null);
 
   const onError = (error) => {
-    console.log("Upload error:", error);
-
-    // Handle specific error cases
-    if (
-      error.message?.includes("transformations limit exceeded") ||
-      error.status === 403
-    ) {
-      toast.error(
-        "Upload limit exceeded. Please upgrade your plan or try again next month."
-      );
-    } else if (error.message?.includes("file size")) {
-      toast.error("File too large. Please choose a smaller file.");
-    } else if (error.message?.includes("file type")) {
-      toast.error("File type not supported. Please choose a different file.");
-    } else {
-      toast.error("Upload failed! Please try again.");
-    }
-
-    // Reset progress if needed
-    if (setProgress) {
-      setProgress(0);
-    }
+    console.log(error);
+    toast.error("Upload failed!");
   };
 
   const onSuccess = (res) => {
-    console.log("Upload success:", res);
+    console.log(res);
     toast.success("Upload successful!");
     setData(res);
-
-    // Reset progress
-    if (setProgress) {
-      setProgress(100);
-    }
   };
 
   const onUploadProgress = (progress) => {
-    console.log("Upload progress:", progress);
-    if (setProgress) {
-      setProgress(Math.round((progress.loaded / progress.total) * 100));
-    }
-  };
-
-  const handleClick = () => {
-    // Reset progress when starting new upload
-    if (setProgress) {
-      setProgress(0);
-    }
-    ref.current.click();
+    console.log(progress);
+    setProgress(Math.round((progress.loaded / progress.total) * 100));
   };
 
   return (
-    <IKContext authenticator={authenticator}>
+    <IKContext
+      publicKey={import.meta.env.VITE_IK_PUBLIC_KEY}
+      urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
+      authenticator={authenticator}
+    >
       <IKUpload
-        ref={ref}
+        useUniqueFileName
         onError={onError}
         onSuccess={onSuccess}
         onUploadProgress={onUploadProgress}
-        style={{ display: "none" }}
-        accept={type === "video" ? "video/*" : "image/*"}
-        isPrivateFile={false}
-        useUniqueFileName={true}
-        responseFields={["tags"]}
-        validateFile={(file) => {
-          // Add file validation
-          const maxSize =
-            type === "video" ? 100 * 1024 * 1024 : 10 * 1024 * 1024; // 100MB for video, 10MB for image
-
-          if (file.size > maxSize) {
-            toast.error(
-              `File too large. Maximum size: ${
-                type === "video" ? "100MB" : "10MB"
-              }`
-            );
-            return false;
-          }
-
-          return true;
-        }}
+        className="hidden"
+        ref={ref}
+        accept={`${type}/*`}
       />
-      <div onClick={handleClick} style={{ cursor: "pointer" }}>
+      <div className="cursor-pointer" onClick={() => ref.current.click()}>
         {children}
       </div>
     </IKContext>
