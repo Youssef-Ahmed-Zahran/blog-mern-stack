@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { Post } = require("../models/Post");
-const { Comment } = require("../models/Comment");
 
 const verifyToken = async (req, res, next) => {
   try {
@@ -33,8 +32,7 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-// Keep this for post routes
-const verifyTokenAndPostAuthorization = async (req, res, next) => {
+const verifyTokenAndAuthorization = async (req, res, next) => {
   try {
     await verifyToken(req, res, async () => {
       // For post routes, check if the user owns the post
@@ -54,36 +52,6 @@ const verifyTokenAndPostAuthorization = async (req, res, next) => {
         return res
           .status(403)
           .json({ message: "You are not allowed to modify this post." });
-      }
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Server error during authorization." });
-  }
-};
-
-// New middleware specifically for comment authorization
-const verifyTokenAndCommentAuthorization = async (req, res, next) => {
-  try {
-    await verifyToken(req, res, async () => {
-      // For comment routes, check if the user owns the comment
-      const comment = await Comment.findById(req.params.id);
-
-      if (!comment) {
-        return res.status(404).json({ message: "Comment not found." });
-      }
-
-      // Compare the comment's user ID with the current user's ID, or check if user is admin
-      if (
-        comment.user.toString() === req.user._id.toString() ||
-        req.user.isAdmin
-      ) {
-        next();
-      } else {
-        return res
-          .status(403)
-          .json({ message: "You are not allowed to delete this comment." });
       }
     });
   } catch (error) {
@@ -132,7 +100,6 @@ const verifyTokenAndAdmin = async (req, res, next) => {
 
 module.exports = {
   verifyToken,
-  verifyTokenAndPostAuthorization,
-  verifyTokenAndCommentAuthorization,
+  verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
 };

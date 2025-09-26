@@ -6,12 +6,12 @@ const {
   deleteComment,
 } = require("../controllers/commentController");
 const {
-  verifyTokenAndCommentAuthorization,
+  verifyTokenAndAuthorization,
   verifyToken,
 } = require("../middlewares/verifyToken");
 
 router.get("/:postId", getPostComments);
 router.post("/:postId", verifyToken, addComment);
-router.delete("/:id", verifyTokenAndCommentAuthorization, deleteComment);
+router.delete("/:id", verifyTokenAndAuthorization, deleteComment);
 
 module.exports = router;
