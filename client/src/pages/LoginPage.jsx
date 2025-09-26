@@ -184,7 +184,7 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="button"
-              onKeyDown={handleSubmit}
+              onClick={handleSubmit}
               disabled={loading}
               className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
                 loading
