@@ -213,9 +213,8 @@ const featurePost = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  setTimeout(() => {
-    res.status(200).json(updatedPost);
-  }, 2000);
+
+  res.status(200).json(updatedPost);
 });
 
 module.exports = {
