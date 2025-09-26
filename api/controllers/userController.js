@@ -123,10 +123,12 @@ const savePosts = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json({
-    message: isSaved ? "Post unsaved" : "Post saved",
-    isSaved: !isSaved, // Return the new state
-  });
+  setTimeout(() => {
+    res.status(200).json({
+      message: isSaved ? "Post unsaved" : "Post saved",
+      isSaved: !isSaved, // Return the new state
+    });
+  }, 1000);
 });
 module.exports = {
   getAllUsers,
