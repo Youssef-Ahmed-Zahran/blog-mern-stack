@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
-const { Post } = require("../models/Post");
 
 const verifyToken = async (req, res, next) => {
   try {
@@ -32,33 +31,14 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-const verifyTokenAndAuthorization = async (req, res, next) => {
-  try {
-    await verifyToken(req, res, async () => {
-      // For post routes, check if the user owns the post
-      const post = await Post.findById(req.params.id);
-
-      if (!post) {
-        return res.status(404).json({ message: "Post not found." });
-      }
-
-      // Compare the post's user ID with the current user's ID, or check if user is admin
-      if (
-        post.user.toString() === req.user._id.toString() ||
-        req.user.isAdmin
-      ) {
-        next();
-      } else {
-        return res
-          .status(403)
-          .json({ message: "You are not allowed to modify this post." });
-      }
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Server error during authorization." });
-  }
+const verifyTokenAndAuthorization = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.id === req.params.id || req.user.isAdmin) {
+      next();
+    } else {
+      return res.status(403).json({ message: "You are not allowed." });
+    }
+  });
 };
 
 const verifyTokenAndAdmin = async (req, res, next) => {
