@@ -35,23 +35,23 @@ const verifyToken = async (req, res, next) => {
 const verifyTokenAndAuthorization = async (req, res, next) => {
   try {
     await verifyToken(req, res, async () => {
-      // Check if the user owns the comment or is an admin
-      const comment = await Comment.findById(req.params.id);
+      // For post routes, check if the user owns the post
+      const post = await Post.findById(req.params.id);
 
-      if (!comment) {
-        return res.status(404).json({ message: "Comment not found." });
+      if (!post) {
+        return res.status(404).json({ message: "Post not found." });
       }
 
-      // Compare the comment's user ID with the current user's ID, or check if user is admin
+      // Compare the post's user ID with the current user's ID, or check if user is admin
       if (
-        comment.user.toString() === req.user._id.toString() ||
+        post.user.toString() === req.user._id.toString() ||
         req.user.isAdmin
       ) {
         next();
       } else {
         return res
           .status(403)
-          .json({ message: "You are not allowed to modify this comment." });
+          .json({ message: "You are not allowed to modify this post." });
       }
     });
   } catch (error) {
@@ -60,6 +60,7 @@ const verifyTokenAndAuthorization = async (req, res, next) => {
       .json({ error: "Server error during authorization." });
   }
 };
+
 const verifyTokenAndAdmin = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
