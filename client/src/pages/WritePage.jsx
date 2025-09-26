@@ -143,11 +143,9 @@ const Write = () => {
     "strike",
     "blockquote",
     "list",
-    "bullet",
     "indent",
     "link",
     "image",
-    "video",
   ];
 
   return (
