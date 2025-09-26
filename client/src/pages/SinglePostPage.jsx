@@ -45,13 +45,25 @@ const SinglePost = () => {
           <h1 className="font-semibold text-xl md:text-3xl xl:text-4xl 2xl:text-5xl">
             {data.title}
           </h1>
-          {/* info */}
-          <div className="text-gray-400 text-xs md:text-sm flex items-center gap-2 mb-4">
-            <span>Written by</span>
-            <Link className="text-blue-800">{data.user?.username}</Link>
-            <span>on</span>
-            <Link className="text-blue-800">{data.category}</Link>
-            <span>{format(data.createdAt)}</span>
+          {/* info - Responsive layout that stacks when needed */}
+          <div className="text-gray-400 text-xs md:text-sm mb-4">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <div className="flex items-center gap-1 whitespace-nowrap">
+                <span>Written by</span>
+                <Link className="text-blue-800 font-medium">
+                  {data.user?.username}
+                </Link>
+              </div>
+              <div className="flex items-center gap-1 whitespace-nowrap">
+                <span>on</span>
+                <Link className="text-blue-800 font-medium">
+                  {data.category}
+                </Link>
+              </div>
+              <span className="whitespace-nowrap">
+                {format(data.createdAt)}
+              </span>
+            </div>
           </div>
           {/* desc */}
           <p className="text-gray-500 font-medium">{data.desc}</p>
