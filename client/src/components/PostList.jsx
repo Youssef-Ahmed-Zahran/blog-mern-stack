@@ -28,7 +28,7 @@ const PostList = () => {
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (status === "loading") return "Loading...";
+  if (status === "loading") return "Load.";
 
   if (status === "error") return "An error has occurred: " + error.message;
 
