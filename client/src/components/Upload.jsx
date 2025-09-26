@@ -3,69 +3,38 @@ import { useRef } from "react";
 import toast from "react-hot-toast";
 import { makeRequest } from "../requestMethod";
 
-// Cache authentication to avoid repeated requests
-let authCache = null;
-let authPromise = null;
-
 const authenticator = async () => {
-  // Return cached auth if still valid (expires in 10 minutes)
-  if (authCache && Date.now() < authCache.expiry) {
-    return authCache.data;
+  try {
+    // Perform the request to the upload authentication endpoint.
+    const response = await makeRequest.get(`/posts/upload-auth`);
+
+    const { signature, expire, token, publicKey } = response.data;
+
+    return { signature, expire, token, publicKey };
+  } catch (error) {
+    // Log the original error for debugging before rethrowing a new error.
+    console.error("Authentication error:", error);
+    throw new Error("Authentication request failed");
   }
-
-  // Return existing promise if one is already in progress
-  if (authPromise) {
-    return authPromise;
-  }
-
-  authPromise = (async () => {
-    try {
-      const response = await makeRequest.get(`/posts/upload-auth`);
-      const { signature, expire, token, publicKey } = response.data;
-
-      // Cache the authentication for 9 minutes (to be safe)
-      authCache = {
-        data: { signature, expire, token, publicKey },
-        expiry: Date.now() + 9 * 60 * 1000,
-      };
-
-      return authCache.data;
-    } catch (error) {
-      console.error("Authentication error:", error);
-      throw new Error("Authentication request failed");
-    } finally {
-      authPromise = null;
-    }
-  })();
-
-  return authPromise;
 };
 
 const Upload = ({ children, type, setData, setProgress }) => {
   const ref = useRef(null);
 
   const onError = (error) => {
-    console.error("Upload error:", error);
+    console.log(error);
     toast.error("Upload failed!");
-    setProgress(0);
   };
 
   const onSuccess = (res) => {
-    console.log("Upload successful:", res.name);
+    console.log(res);
     toast.success("Upload successful!");
     setData(res);
-    setProgress(0);
   };
 
   const onUploadProgress = (progress) => {
-    const percentage = Math.round((progress.loaded / progress.total) * 100);
-
-    // Only log progress at 10% intervals to reduce console spam
-    if (percentage % 10 === 0 || percentage === 100) {
-      console.log(`Upload progress: ${percentage}%`);
-    }
-
-    setProgress(percentage);
+    console.log(progress);
+    setProgress(Math.round((progress.loaded / progress.total) * 100));
   };
 
   return (
