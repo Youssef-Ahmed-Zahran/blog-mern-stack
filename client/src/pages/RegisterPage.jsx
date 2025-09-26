@@ -93,7 +93,9 @@ const Register = () => {
   };
 
   // Handle Registration
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     // Clear previous errors
     setErrors({});
 
@@ -112,13 +114,51 @@ const Register = () => {
         email,
         password,
       });
-      toast.success("Registerd Success 😊");
+      toast.success("Registration Success 😊");
       navigate("/login");
     } catch (err) {
-      toast.error(err);
       console.error("Registration error:", err);
+
+      // Better error handling
+      let errorMessage = "Something went wrong. Please try again later.";
+
+      if (err.response) {
+        // Server responded with error status
+        const statusCode = err.response.status;
+        const serverMessage =
+          err.response.data?.message || err.response.data?.error;
+
+        if (statusCode === 409 || statusCode === 400) {
+          // Conflict (user already exists) or Bad Request
+          if (serverMessage) {
+            errorMessage = serverMessage;
+          } else if (statusCode === 409) {
+            errorMessage =
+              "Email or username already exists. Please try different credentials.";
+          } else {
+            errorMessage =
+              "Invalid registration data. Please check your input.";
+          }
+        } else if (statusCode === 422) {
+          // Validation error
+          errorMessage =
+            serverMessage || "Please check your input and try again.";
+        } else if (statusCode === 500) {
+          errorMessage = "Server error. Please try again later.";
+        } else if (serverMessage) {
+          errorMessage = serverMessage;
+        }
+      } else if (err.request) {
+        // Network error
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (err.message) {
+        // Other error with message
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
       setErrors({
-        general: "Something went wrong. Please try again later.",
+        general: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -164,7 +204,7 @@ const Register = () => {
           )}
 
           {/* Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
               <label
@@ -180,7 +220,7 @@ const Register = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.email
                       ? "border-red-300 bg-red-50"
                       : "border-gray-300 hover:border-gray-400"
@@ -212,7 +252,7 @@ const Register = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.username
                       ? "border-red-300 bg-red-50"
                       : username.length >= 3 && validateUsername(username)
@@ -256,7 +296,7 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.password
                       ? "border-red-300 bg-red-50"
                       : "border-gray-300 hover:border-gray-400"
@@ -331,7 +371,7 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.confirmPassword
                       ? "border-red-300 bg-red-50"
                       : confirmPassword && password === confirmPassword
@@ -370,19 +410,24 @@ const Register = () => {
             {/* Terms and Conditions */}
             <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
               By creating an account, you agree to our{" "}
-              <button className="text-blue-700 hover:text-purple-800 underline">
+              <button
+                type="button"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
                 Terms of Service
-              </button>
-              and
-              <button className="text-blue-700 hover:text-purple-800 underline">
+              </button>{" "}
+              and{" "}
+              <button
+                type="button"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
                 Privacy Policy
               </button>
             </div>
 
             {/* Submit Button */}
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
               className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
                 loading
@@ -399,16 +444,17 @@ const Register = () => {
                 "Create Account"
               )}
             </button>
-          </div>
+          </form>
 
           {/* Login Link */}
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm">
               Already have an account?{" "}
-              <Link to={"/login"}>
-                <button className="font-medium text-blue-600 hover:text-blue-800 transition-colors">
-                  Sign In
-                </button>
+              <Link
+                to="/login"
+                className="font-medium text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                Sign In
               </Link>
             </p>
           </div>
