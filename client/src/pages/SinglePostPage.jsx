@@ -21,7 +21,7 @@ const SinglePost = () => {
   });
 
   if (isPending) {
-    return <span>Loading...</span>;
+    return <span>Load.</span>;
   }
 
   if (isError) {
