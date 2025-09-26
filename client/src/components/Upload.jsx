@@ -8,17 +8,8 @@ const authenticator = async () => {
     // Perform the request to the upload authentication endpoint.
     const response = await makeRequest.get(`/posts/upload-auth`);
 
-    if (!response) {
-      // If the server response is not successful, extract the error text for debugging.
-      const errorText = await response.text();
-      throw new Error(
-        `Request failed with status ${response.status}: ${errorText}`
-      );
-    }
+    const { signature, expire, token, publicKey } = response.data;
 
-    // Parse and destructure the response JSON for upload credentials.
-    const data = await response.json();
-    const { signature, expire, token, publicKey } = data;
     return { signature, expire, token, publicKey };
   } catch (error) {
     // Log the original error for debugging before rethrowing a new error.
@@ -32,18 +23,18 @@ const Upload = ({ children, type, setData, setProgress }) => {
 
   const onError = (error) => {
     console.log(error);
-    toast.error("Image uploaded failed!");
+    toast.error("Upload failed!");
   };
 
   const onSuccess = (res) => {
     console.log(res);
-    toast.success("Image uploaded successfuly!");
+    toast.success("Upload successful!");
     setData(res);
   };
 
   const onUploadProgress = (progress) => {
     console.log(progress);
-    setProgress(Math.round(progress.loaded / progress.total) * 100);
+    setProgress(Math.round((progress.loaded / progress.total) * 100));
   };
 
   return (
