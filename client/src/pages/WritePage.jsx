@@ -157,7 +157,7 @@ const Write = () => {
         >
           {mutation.isPending ? "Sending..." : "Send"}
         </button>
-        {"Progress" + progress}
+        {"Progress: " + progress}
         {mutation.isError ? (
           <div>An error occurred: {mutation.error.message}</div>
         ) : null}
