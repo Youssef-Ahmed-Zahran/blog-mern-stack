@@ -12,6 +12,6 @@ const {
 
 router.get("/:postId", getPostComments);
 router.post("/:postId", verifyToken, addComment);
-router.delete("/:id", verifyToken, deleteComment);
+router.delete("/:id", verifyTokenAndAuthorization, deleteComment);
 
 module.exports = router;

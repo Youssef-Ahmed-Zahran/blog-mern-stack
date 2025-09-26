@@ -40,12 +40,23 @@ const addComment = asyncHandler(async (req, res) => {
  */
 const deleteComment = asyncHandler(async (req, res) => {
   const comment = await Comment.findById(req.params.id);
-  if (comment) {
-    const deletedComment = await Comment.findByIdAndDelete(req.params.id);
-    res.status(201).json(deletedComment);
-  } else {
-    res.status(404).json({ message: "Comment not found!" });
+
+  if (!comment) {
+    return res.status(404).json({ message: "Comment not found!" });
   }
+
+  // Check if user owns the comment or is admin
+  if (
+    !req.user.isAdmin &&
+    comment.user.toString() !== req.user._id.toString()
+  ) {
+    return res.status(403).json({
+      message: "Access denied. You can only delete your own comments.",
+    });
+  }
+
+  const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+  res.status(200).json(deletedComment);
 });
 
 module.exports = {
