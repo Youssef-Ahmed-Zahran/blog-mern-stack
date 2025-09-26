@@ -15,74 +15,19 @@ const Write = () => {
   const [video, setVideo] = useState("");
   const [progress, setProgress] = useState(0);
 
-  // Helper function to get proper video URL
-  const getVideoUrl = (videoData) => {
-    if (!videoData || !videoData.url) return "";
-
-    let videoUrl = videoData.url;
-
-    // If it's an ImageKit URL, ensure it has proper video transformations
-    if (videoUrl.includes("ik.imagekit.io")) {
-      // Remove existing transformations and add our own
-      const baseUrl = videoUrl.split("?")[0];
-      videoUrl = `${baseUrl}?tr=f-mp4,q-80`;
-    }
-
-    return videoUrl;
-  };
-
-  // Helper function to check if video format is supported
-  const isSupportedVideoFormat = (url) => {
-    const supportedFormats = [".mp4", ".webm", ".ogg"];
-    return supportedFormats.some(
-      (format) =>
-        url.toLowerCase().includes(format) || url.toLowerCase().endsWith(format)
-    );
-  };
-
   useEffect(() => {
-    if (img && img.url) {
-      setValue(
-        (prev) =>
-          prev +
-          `<p><img src="${img.url}" alt="Uploaded image" style="max-width: 100%; height: auto;"/></p>`
-      );
-    }
+    img && setValue((prev) => prev + `<p><image src="${img.url}"/></p>`);
   }, [img]);
 
   useEffect(() => {
-    if (video && video.url) {
-      const videoUrl = getVideoUrl(video);
-
-      if (isSupportedVideoFormat(videoUrl)) {
-        // Use HTML5 video element instead of iframe for better compatibility
-        setValue(
-          (prev) =>
-            prev +
-            `<p><video controls style="max-width: 100%; height: auto;" preload="metadata">
-            <source src="${videoUrl}" type="video/mp4">
-            <source src="${videoUrl.replace(
-              /\.[^.]+$/,
-              ".webm"
-            )}" type="video/webm">
-            Your browser does not support the video tag.
-          </video></p>`
-        );
-      } else {
-        // Fallback for unsupported formats or external links
-        setValue(
-          (prev) =>
-            prev +
-            `<p><a href="${videoUrl}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; text-decoration: underline;">
-            📹 Video Link: ${video.name || "Click to view video"}
-          </a></p>`
-        );
-      }
-    }
+    video &&
+      setValue(
+        (prev) => prev + `<p><iframe class="ql-video" src="${video.url}"/></p>`
+      );
   }, [video]);
 
   const { currentUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const navegate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: async (newPost) => {
@@ -90,12 +35,7 @@ const Write = () => {
     },
     onSuccess: (res) => {
       toast.success("Post has been created");
-      navigate(`/post/${res.data.slug}`);
-    },
-    onError: (error) => {
-      toast.error(
-        "Failed to create post: " + (error.message || "Unknown error")
-      );
+      navegate(`/post/${res.data.slug}`);
     },
   });
 
@@ -119,39 +59,10 @@ const Write = () => {
     setCover("");
   };
 
-  // Custom ReactQuill modules with video support
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image"],
-      ["clean"],
-    ],
-  };
-
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "indent",
-    "link",
-    "image",
-  ];
-
   return (
     <div className="h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] flex flex-col gap-6">
       <h1 className="text-xl font-light">Create a New Post</h1>
-
+      {/* form */}
       <form className="flex flex-col gap-6 flex-1 mb-6" onSubmit={handleSubmit}>
         {/* Cover Image Upload and Preview */}
         <div className="flex flex-col gap-3">
@@ -164,16 +75,13 @@ const Write = () => {
             </button>
           </Upload>
 
+          {/* Cover Image Preview */}
           {cover && cover.url && (
             <div className="relative w-full max-w-md">
               <img
                 src={cover.url}
                 alt="Cover preview"
                 className="w-full h-48 object-cover rounded-xl shadow-md"
-                onError={(e) => {
-                  e.target.style.display = "none";
-                  toast.error("Failed to load cover image");
-                }}
               />
               <button
                 type="button"
@@ -187,7 +95,7 @@ const Write = () => {
           )}
         </div>
 
-        {/* Title */}
+        {/* title */}
         <input
           type="text"
           placeholder="My Awesome Story"
@@ -196,7 +104,7 @@ const Write = () => {
           required
         />
 
-        {/* Category */}
+        {/* category */}
         <div className="flex items-center gap-4">
           <label htmlFor="category" className="text-sm">
             Choose a Category:
@@ -215,73 +123,44 @@ const Write = () => {
           </select>
         </div>
 
-        {/* Description */}
+        {/* desc */}
         <textarea
           name="desc"
           placeholder="A Short Description..."
-          className="p-4 rounded-xl outline-none shadow-md bg-white resize-vertical min-h-[80px]"
+          className="p-4 rounded-xl outline-none shadow-md bg-white"
         />
 
-        {/* Content Editor */}
-        <div className="flex flex-1 min-h-[400px]">
-          <div className="flex flex-col gap-2 mr-2">
+        {/* content */}
+        <div className="flex flex-1">
+          <div className="flex flex-col gap-2 mr-2 cursor-pointer">
             <Upload type="image" setProgress={setProgress} setData={setImg}>
-              <button
-                type="button"
-                className="p-2 text-xl hover:bg-gray-100 rounded transition-colors"
-                title="Add Image"
-              >
-                🌆
-              </button>
+              🌆
             </Upload>
             <Upload type="video" setProgress={setProgress} setData={setVideo}>
-              <button
-                type="button"
-                className="p-2 text-xl hover:bg-gray-100 rounded transition-colors"
-                title="Add Video"
-              >
-                ▶️
-              </button>
+              ▶️
             </Upload>
           </div>
-
           <ReactQuill
             theme="snow"
             value={value}
             onChange={setValue}
-            modules={modules}
-            formats={formats}
             className="flex-1 rounded-xl outline-none shadow-md bg-white"
-            readOnly={progress > 0 && progress < 100}
-            placeholder="Write your story here..."
+            readOnly={0 < progress && progress < 100}
           />
         </div>
 
-        {/* Progress Indicator */}
-        {progress > 0 && progress < 100 && (
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        )}
-
-        {/* Submit Button */}
+        {/* btn send */}
         <button
           type="submit"
-          className="self-start bg-blue-800 text-white p-3 px-6 rounded-xl font-medium mt-4 disabled:cursor-not-allowed disabled:opacity-50 hover:bg-blue-900 transition-colors"
+          className="self-start bg-blue-800 text-white p-2 w-36 rounded-xl font-medium mt-4 disabled:cursor-not-allowed mb-2"
           disabled={mutation.isPending || (progress > 0 && progress < 100)}
         >
-          {mutation.isPending ? "Creating Post..." : "Create Post"}
+          {mutation.isPending ? "Sending..." : "Send"}
         </button>
-
-        {/* Error Display */}
-        {mutation.isError && (
-          <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">
-            An error occurred: {mutation.error.message}
-          </div>
-        )}
+        {"Progress: " + progress}
+        {mutation.isError ? (
+          <div>An error occurred: {mutation.error.message}</div>
+        ) : null}
       </form>
     </div>
   );
