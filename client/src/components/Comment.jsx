@@ -5,12 +5,13 @@ import { AuthContext } from "../context/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "../requestMethod";
 import toast from "react-hot-toast";
+import { Navigate } from "react-router-dom";
 
 const Comment = ({ comment, postId }) => {
   const { currentUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  // Delete Comment
+  // Delete Post
   const deleteMutation = useMutation({
     mutationFn: () => {
       return makeRequest.delete(`/comments/${comment._id}`);
@@ -18,18 +19,14 @@ const Comment = ({ comment, postId }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       toast.success("Comment deleted successfully!");
+      Navigate("/");
     },
     onError: (error) => {
-      console.log(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to delete comment"
-      );
-      toast.error(error.response?.data?.message || "Failed to delete comment");
+      console.log(error.response?.message || "Failed to delete comment");
     },
   });
 
-  const isAdmin = currentUser?.isAdmin || false;
+  const isAdmin = currentUser.isAdmin || false;
 
   return (
     <div className="bg-slate-50 p-4 rounded-xl mb-8">
@@ -52,7 +49,7 @@ const Comment = ({ comment, postId }) => {
             onClick={() => deleteMutation.mutate()}
           >
             delete
-            {deleteMutation.isPending && <span> (deleting...)</span>}
+            {deleteMutation.isPending && <span>(in progress)</span>}
           </span>
         )}
       </div>
