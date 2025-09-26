@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { makeRequest } from "../requestMethod";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export const AuthContext = createContext();
 
@@ -78,7 +79,9 @@ export const AuthContextProvider = ({ children }) => {
 
   // Loading
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <LoadingSpinner fullScreen={true} text="Initializing..." size="lg" />
+    );
   }
 
   return (

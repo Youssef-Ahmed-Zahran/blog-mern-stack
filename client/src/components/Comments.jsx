@@ -4,6 +4,7 @@ import { makeRequest } from "../requestMethod";
 import toast from "react-hot-toast";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import LoadingSpinner from "./LoadingSpinner";
 
 const fetchComments = async (postId) => {
   const res = await makeRequest.get(`/comments/${postId}`);
@@ -69,8 +70,9 @@ const Comments = ({ postId }) => {
           Send
         </button>
       </form>
+
       {isPending ? (
-        "Loading..."
+        <LoadingSpinner text="Loading comments..." />
       ) : error ? (
         "Error loading comment"
       ) : (

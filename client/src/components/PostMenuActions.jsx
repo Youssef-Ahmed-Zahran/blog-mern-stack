@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "../requestMethod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import LoadingSpinner from "./LoadingSpinner";
 
 const fetchUserPosts = async () => {
   const res = await makeRequest.get("/users/saved");
@@ -99,7 +100,7 @@ const PostMenuActions = ({ post }) => {
     <div className="">
       <h1 className="mt-8 mb-4 text-sm font-medium">Actions</h1>
       {isPending ? (
-        "Loading"
+        <LoadingSpinner size="sm" text="Loading..." />
       ) : error ? (
         "Saved post fetching failed!"
       ) : (

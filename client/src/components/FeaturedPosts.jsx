@@ -3,6 +3,7 @@ import Imagee from "../components/Imagee";
 import { useQuery } from "@tanstack/react-query";
 import { makeRequest } from "../requestMethod";
 import { format } from "timeago.js";
+import LoadingSpinner from "./LoadingSpinner";
 
 const fetchFeaturedPosts = async () => {
   const res = await makeRequest.get(`/posts?featured=true&limit=4&sort=newest`);
@@ -16,8 +17,9 @@ const FeaturedPosts = () => {
   });
 
   if (isPending) {
-    return <span>Loading...</span>;
+    return <LoadingSpinner text="Loading featured posts..." />;
   }
+  3;
 
   if (isError) {
     return <span>Error: {error.message}</span>;

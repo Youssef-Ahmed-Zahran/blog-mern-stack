@@ -3,6 +3,7 @@ import { makeRequest } from "../requestMethod";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSearchParams } from "react-router-dom";
+import LoadingSpinner from "./LoadingSpinner";
 
 const fetchPosts = async (pageParam, searchParams) => {
   const searchParamsObj = Object.fromEntries([...searchParams]);
@@ -28,7 +29,7 @@ const PostList = () => {
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (status === "loading") return "Loading...";
+  if (status === "loading") return <LoadingSpinner text="Loading posts..." />;
 
   if (status === "error") return "An error has occurred: " + error.message;
 
@@ -40,9 +41,9 @@ const PostList = () => {
       next={fetchNextPage}
       hasMore={!!hasNextPage}
       loader={
-        <h4 className=" bg-white text-gray-400 p-2 rounded-lg">
-          Loading More Posts...
-        </h4>
+        <div className="bg-white p-2 rounded-lg">
+          <LoadingSpinner size="sm" text="Loading More Posts..." />
+        </div>
       }
       endMessage={
         <p className="mb-5 text-center font-medium">

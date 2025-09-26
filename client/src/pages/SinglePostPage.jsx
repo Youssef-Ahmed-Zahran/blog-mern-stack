@@ -6,6 +6,7 @@ import Comments from "../components/Comments";
 import { useQuery } from "@tanstack/react-query";
 import { makeRequest } from "../requestMethod";
 import { format } from "timeago.js";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const fetchSinglePost = async (slug) => {
   const res = await makeRequest.get(`/posts/${slug}`);
@@ -21,7 +22,9 @@ const SinglePost = () => {
   });
 
   if (isPending) {
-    return <span>Load.</span>;
+    return (
+      <LoadingSpinner fullScreen={true} text="Loading post..." size="lg" />
+    );
   }
 
   if (isError) {
