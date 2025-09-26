@@ -71,10 +71,39 @@ const Login = () => {
         navigate("/");
       }
     } catch (err) {
-      toast.error(err);
       console.error("Login error:", err);
+
+      // Better error handling
+      let errorMessage = "Something went wrong. Please try again later.";
+
+      if (err.response) {
+        // Server responded with error status
+        const statusCode = err.response.status;
+        const serverMessage =
+          err.response.data?.message || err.response.data?.error;
+
+        if (statusCode === 401) {
+          errorMessage =
+            "Invalid email or password. Please check your credentials.";
+        } else if (statusCode === 400) {
+          errorMessage =
+            serverMessage || "Invalid request. Please check your input.";
+        } else if (statusCode === 500) {
+          errorMessage = "Server error. Please try again later.";
+        } else if (serverMessage) {
+          errorMessage = serverMessage;
+        }
+      } else if (err.request) {
+        // Network error
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (err.message) {
+        // Other error with message
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
       setErrors({
-        general: "Something went wrong. Please try again later.",
+        general: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -104,7 +133,7 @@ const Login = () => {
           )}
 
           {/* Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
               <label
@@ -183,8 +212,7 @@ const Login = () => {
 
             {/* Submit Button */}
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
               className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
                 loading
@@ -201,16 +229,17 @@ const Login = () => {
                 "Sign In"
               )}
             </button>
-          </div>
+          </form>
 
           {/* Register Link */}
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm">
-              {"Don't have an account?"}
-              <Link to="/register">
-                <button className="font-medium text-blue-600 hover:text-blue-800 transition-colors">
-                  Create Account
-                </button>
+              {"Don't have an account? "}
+              <Link
+                to="/register"
+                className="font-medium text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                Create Account
               </Link>
             </p>
           </div>
