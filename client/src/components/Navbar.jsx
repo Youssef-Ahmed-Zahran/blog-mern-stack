@@ -65,7 +65,7 @@ const Navbar = () => {
             Trending
           </Link>
           <Link
-            to="/popular"
+            to="/"
             className="hover:text-blue-800 transition-colors"
             onClick={handleLinkClick}
           >
