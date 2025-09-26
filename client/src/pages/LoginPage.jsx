@@ -69,7 +69,7 @@ const Login = () => {
         await login(response.data.token);
         toast.success("LoggedIn Success 😎");
         navigate("/");
-      } 
+      }
     } catch (err) {
       toast.error(err);
       console.error("Login error:", err);
@@ -102,15 +102,6 @@ const Login = () => {
               <p className="text-red-700 text-sm">{errors.general}</p>
             </div>
           )}
-
-          {/* Demo Credentials Notice */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-700 text-sm font-medium mb-1">
-              Demo Credentials:
-            </p>
-            <p className="text-blue-600 text-xs">Email: demo@example.com</p>
-            <p className="text-blue-600 text-xs">Password: password123</p>
-          </div>
 
           {/* Form */}
           <div className="space-y-6">
