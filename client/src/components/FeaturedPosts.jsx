@@ -45,7 +45,7 @@ const FeaturedPosts = () => {
         {/* details */}
         <div className="flex items-center gap-4">
           <h1 className="font-semibold lg:text-lg">01.</h1>
-          <div className="text-sm">
+          <div className="text-xs">
             <Link
               className="text-blue-800 lg:text-lg"
               to={`/posts?cat=${posts[0].category}`}
