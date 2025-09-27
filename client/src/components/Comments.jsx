@@ -38,9 +38,16 @@ const Comments = ({ postId }) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    const commentText = formData.get("desc");
+
+    // Validate if comment is empty or contains only whitespace
+    if (!commentText || commentText.trim() === "") {
+      toast.error("Please write a comment before sending.");
+      return;
+    }
 
     const data = {
-      desc: formData.get("desc"),
+      desc: commentText.trim(),
       user: currentUser?._id,
       post: postId,
     };
